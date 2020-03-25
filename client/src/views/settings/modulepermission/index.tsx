@@ -25,25 +25,41 @@ export const ModulePermission = () => {
   const [loading, setLoading] = useState(false);
   const [didfetch, setDidfetch] = useState(false);
 
-  const [MD, setMD] = useState([]);
-  const [UD, setUD] = useState([]);
-  const [GD, setGD] = useState([]);
-  
-const railsApi = 'http://127.0.0.1:3000';
-const CompanyId = localStorage.getItem('CompanyId');
-const ProductId = localStorage.getItem('ProductId');
-const ProjectId = localStorage.getItem('ProjectId');
+  const [MDMonitor, setMDMonitor] = useState([]);
+  const [UDMonitor, setUDMonitor] = useState([]);
+  const [GDMonitor, setGDMonitor] = useState([]);
 
-const fetchData = () => {
-  const SOURCE_URL = `${railsApi}/${CompanyId}/${ProductId}/${ProjectId}/modulepermission/api`;
-  setLoading(!loading);
-  fetch(SOURCE_URL, {
-    method: 'get',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    }
-  })
+  const [MHMonitor, setMHMonitor] = useState([]);
+  const [UHMonitor, setUHMonitor] = useState([]);
+  const [GHMonitor, setGHMonitor] = useState([]);
+
+  const [MWMonitor, setMWMonitor] = useState([]);
+  const [UWMonitor, setUWMonitor] = useState([]);
+  const [GWMonitor, setGWMonitor] = useState([]);
+
+  const [MDEditor, setMDEditor] = useState([]);
+  const [UDEditor, setUDEditor] = useState([]);
+  const [GDEditor, setGDEditor] = useState([]);
+
+  const [MHEditor, setMHEditor] = useState([]);
+  const [UHEditor, setUHEditor] = useState([]);
+  const [GHEditor, setGHEditor] = useState([]);
+
+  const railsApi = 'https://siemensproduct.nadi3docms.com/api'
+  const CompanyId = localStorage.getItem('CompanyId');
+  const ProductId = localStorage.getItem('ProductId');
+  const ProjectId = localStorage.getItem('ProjectId');
+
+  const fetchData = () => {
+    const SOURCE_URL = `${railsApi}/${CompanyId}/${ProductId}/${ProjectId}/modulepermission/api`;
+    setLoading(!loading);
+    fetch(SOURCE_URL, {
+      method: 'get',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      }
+    })
     .then(response =>
       response.json().then(data => ({
         data: data,
@@ -68,50 +84,197 @@ const fetchData = () => {
 //     "GW": "[8293218,0,1,0,1,1,29,1,0,0,0]"
 // }
 
-        var dMD=JSON.parse(res.data[0].MD)
-        var dMH=JSON.parse(res.data[0].MH)
-        var dMW=JSON.parse(res.data[0].MW)
-        var dUD=JSON.parse(res.data[0].UD)
-        var dUH=JSON.parse(res.data[0].UH)
-        var dUW=JSON.parse(res.data[0].UW)
-        var dGD=JSON.parse(res.data[0].GD)
-        var dGH=JSON.parse(res.data[0].GH)
-        var dGW=JSON.parse(res.data[0].GW)
-        handleBinary(dMD, "MD")
-        handleBinary(dUD, "UD")
-        handleBinary(dGD, "GD")
-        console.log(MD)
-        localStorage.setItem("context","a")
+        let sourceMD=JSON.parse(res.data[0].MD)
+        let sourceMH=JSON.parse(res.data[0].MH)
+        let sourceMW=JSON.parse(res.data[0].MW)
+        let sourceUD=JSON.parse(res.data[0].UD)
+        let sourceUH=JSON.parse(res.data[0].UH)
+        let sourceUW=JSON.parse(res.data[0].UW)
+        let sourceGD=JSON.parse(res.data[0].GD)
+        let sourceGH=JSON.parse(res.data[0].GH)
+        let sourceGW=JSON.parse(res.data[0].GW)
+        handleBinary(sourceMD[0], "MDMonitor", "Main")
+        handleBinary(sourceUD[0], "UDMonitor", "Main")
+        handleBinary(sourceGD[0], "GDMonitor", "Main")
+
+        handleBinary(sourceMH[0], "MHMonitor", "Main")
+        handleBinary(sourceUH[0], "UHMonitor", "Main")
+        handleBinary(sourceGH[0], "GHMonitor", "Main")
+
+        handleBinary(sourceMW[0], "MWMonitor", "Main")
+        handleBinary(sourceUW[0], "UWMonitor", "Main")
+        handleBinary(sourceGW[0], "GWMonitor", "Main")
+
+        handleBinary(sourceMD[1], "MDEditor", "Main")
+        handleBinary(sourceUD[1], "UDEditor", "Main")
+        handleBinary(sourceGD[1], "GDEditor", "Main")
+
+        handleBinary(sourceMH[1], "MHEditor", "Main")
+        handleBinary(sourceUH[1], "UHEditor", "Main")
+        handleBinary(sourceGH[1], "GHEditor", "Main")
+
+        handleBinary(sourceGH[1], "GHEditor", "Main")
       }
     });
   };
 
-  const handleSubmit = () => {
-    alert("Submmit")
+  var monitorArray = [
+    "isQuit",
+    "isLogOut",
+    "isHostSetting",
+    "isLanguage",
+    "isResolution",
+    "isWorkingType",
+    "isSwitchType",
+    "isSetting",
+    "isVR",
+    "isAR",
+    "isMouse3D",
+    "isDevice",
+    "isConsoleView",
+    "isTreeView",
+    "isMonitorView",
+    "isAlertListView",
+    "isLBSView",
+    "isTimeBarView",
+    "isVideoView",
+    "isWebBrowserView",
+    "isReportView",
+    "isWindows",
+    "isEnable"
+  ]
+
+  const handleBinary = (data :any, rank: String, group: String) => {
+    const toBinary = (n: Number) => n.toString(2);
+    var binaryString = toBinary(data)
+    
+    var strx = binaryString.split('')
+    var binaryArray :Array<String>=[] 
+    binaryArray = binaryArray.concat(strx);
+    var setInit = []
+    
+    if(group = "Main") {
+      for(var i=0; i<binaryArray.length; i++){
+        if(binaryArray[i]=="1") {
+          setInit[i]=true
+        }else{
+          setInit[i]=false
+        }
+      }
+      switch (rank) {
+        case 'MDMonitor':
+          setMDMonitor(setInit)
+          break;
+        case 'UDMonitor':
+          setUDMonitor(setInit)
+          break;
+        case 'GDMonitor':
+          setGDMonitor(setInit)
+          break;
+        case 'MHMonitor':
+          setMHMonitor(setInit)
+          break;
+        case 'UHMonitor':
+          setUHMonitor(setInit)
+          break;
+        case 'GHMonitor':
+          setGHMonitor(setInit)
+          break;
+        case 'MWMonitor':
+          setMWMonitor(setInit)
+          break;
+        case 'UWMonitor':
+          setUWMonitor(setInit)
+          break;
+        case 'GWMonitor':
+          setGWMonitor(setInit)
+          break;
+        case 'MDEditor':
+          setMDEditor(setInit)
+          break;
+        case 'UDEditor':
+          setUDEditor(setInit)
+          break;
+        case 'GDEditor':
+          setGDEditor(setInit)
+          break;
+        case 'MHEditor':
+          setMHEditor(setInit)
+          break;
+        case 'UHEditor':
+          setUHEditor(setInit)
+          break;
+        case 'GHEditor':
+          setGHEditor(setInit)
+          break;
+        default:
+          console.log('Err');
+      }
+    }
+  }
+
+  const handleSubmit = 
+  () => {
     console.log("Submmit =>")
-    console.log(MD)
-    console.log(UD)
-    console.log(GD)
-    // var stringMDArray = JSON.stringify([MD0,MD1,MD2,MD3,MD4,MD5,MD6,MD7,MD8,MD9,MD10])
-    // var stringMHArray = JSON.stringify([MH0,MH1,MH2,MH3,MH4,MH5,MH6,MH7,MH8,MH9,MH10])
-    // var stringMWArray = JSON.stringify([MW0,MW1,MW2,MW3,MW4,MW5,MW6,MW7,MW8,MW9,MW10])
-    // var stringUDArray = JSON.stringify([UD0,UD1,UD2,UD3,UD4,UD5,UD6,UD7,UD8,UD9,UD10])
-    // var stringUHArray = JSON.stringify([UH0,UH1,UH2,UH3,UH4,UH5,UH6,UH7,UH8,UH9,UH10])
-    // var stringUWArray = JSON.stringify([UW0,UW1,UW2,UW3,UW4,UW5,UW6,UW7,UW8,UW9,UW10])
-    // var stringGDArray = JSON.stringify([GD0,GD1,GD2,GD3,GD4,GD5,GD6,GD7,GD8,GD9,GD10])
-    // var stringGHArray = JSON.stringify([GH0,GH1,GH2,GH3,GH4,GH5,GH6,GH7,GH8,GH9,GH10])
-    // var stringGWArray = JSON.stringify([GW0,GW1,MD2,MD3,MD4,MD5,MD6,MD7,MD8,MD9,MD10])
-    // var postObj = {
-    //   "MD": stringMDArray,
-    //   "MH": stringMHArray,
-    //   "MW": stringMWArray,
-    //   "UD": stringUDArray,
-    //   "UH": stringUHArray,
-    //   "UW": stringUWArray,
-    //   "GD": stringGDArray,
-    //   "GH": stringGHArray,
-    //   "GW": stringGWArray
-    // }
+    var toBinary = (source :Array<boolean>) => {
+      var binaryArray= []
+      for (var i in source) {
+        if(source[i]) {
+          binaryArray.push(1);
+        } else {
+          binaryArray.push(0);
+        }
+      }
+
+      var binaryString = binaryArray.toString().replace(/,/g,'')
+      let buffer = BigInt("0b"+binaryString)
+      let bufferString = buffer.toString()
+      bufferString = bufferString.substring(0, bufferString.length);
+      return bufferString;
+    }
+    var binaryMDM=toBinary(MDMonitor)
+    var binaryUDM=toBinary(UDMonitor)
+    var binaryGDM=toBinary(GDMonitor)
+    var binaryMHM=toBinary(MHMonitor)
+    var binaryUHM=toBinary(UHMonitor)
+    var binaryGHM=toBinary(GHMonitor)
+    var binaryMWM=toBinary(MWMonitor)
+    var binaryUWM=toBinary(UWMonitor)
+    var binaryGWM=toBinary(GWMonitor)
+
+    console.log(binaryMDM)
+    console.log(binaryUDM)
+    console.log(binaryGDM)
+    console.log(binaryMHM)
+    console.log(binaryUHM)
+    console.log(binaryGHM)
+    console.log(binaryMWM)
+    console.log(binaryUWM)
+    console.log(binaryGWM)
+
+    var body = {
+      MD:"",
+      MH:"",
+      MW:"",
+      UD:"",
+      UH:"",
+      UW:"",
+      GD:"",
+      GH:"",
+      GW:""
+    }
+    body.MD=`[${binaryMDM},262143,1,7,1,1,31,3,1,1,1]`
+    body.MH=`[${binaryMHM},0,1,0,1,1,29,1,0,1,0]`
+    body.MW=`[${binaryMWM},0,1,0,1,1,29,1,0,0,0]`
+    body.UD=`[${binaryUDM},0,1,0,1,1,31,3,1,1,1]`
+    body.UH=`[${binaryUHM},0,1,0,1,1,29,1,0,1,0]`
+    body.UW=`[${binaryMWM},0,1,0,1,1,29,1,0,0,0]`
+    body.GD=`[${binaryGDM},0,1,0,1,1,31,3,1,1,1]`
+    body.GH=`[${binaryGHM},0,1,0,1,1,29,1,0,1,0]`
+    body.GW=`[${binaryGWM},0,1,0,1,1,29,1,0,0,0]`
+
+    console.log("postBody=>")
+    console.log(body)
     const POST_URL = `${railsApi}/${CompanyId}/${ProductId}/${ProjectId}/modulepermission`;
     // post data body
     // {
@@ -125,24 +288,24 @@ const fetchData = () => {
       //     "GH": "[8293218,0,1,0,1,1,29,1,0,1,0]",
       //     "GW": "[8293218,0,1,0,1,1,29,1,0,0,0]"
       // }
-    // fetch(POST_URL, {
-    //   method: 'post',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     Accept: 'application/json',
-    //   },
-    //   body: JSON.stringify(postObj)
-    // })
-    //   .then(response =>
-    //     response.json().then(data => ({
-    //       data: data,
-    //       status: response.status,
-    //     }))
-    //   )
-    //   .then(res => {
-    //     alert(res.data.message)
-    //     fetchData()
-    //   })
+    fetch(POST_URL, {
+      method: 'post',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(body)
+    })
+      .then(response =>
+        response.json().then(data => ({
+          data: data,
+          status: response.status,
+        }))
+      )
+      .then(res => {
+        alert(res.data.message)
+        fetchData()
+      })
   }
 
   if (localStorage.getItem('login') !== 'true') {
@@ -155,209 +318,366 @@ const fetchData = () => {
     setDidfetch(!didfetch)
   }
 
-  
-
-  var funcArray = [
-    "isQuit",
-    "isLogOut",
-    "isHostSetting",
-    "isLanguage",
-    "isResolution",
-    "isWorkingType",
-    "isSwitchType",
-    "isSetting",
-    "isVR",
-    "isAR",
-    "isMouse3D",
-    "isDevice",
-    "isConsoleView",
-    "isTreeView",
-    "isMonitorView",
-    "isAlertListView",
-    "isLBSView",
-    "isTimeBarView",
-    "isVideoView",
-    "isWebBrowserView",
-    "isReportView",
-    "isWindows",
-    "isEnable"
-  ]
-
-
-  const handleBinary = (data :any, rank: String) => {
-    const toBinary = (n: Number) => n.toString(2);
-    var binaryString = toBinary(data)
-    
-    var strx = binaryString.split('')
-    var binaryArray :Array<String>=[] 
-    binaryArray = binaryArray.concat(strx);
-    var setInit = []
-    for(var i=0; i<binaryArray.length; i++){
-      if(binaryArray[i]=="1") {
-        setInit[i]=true
-      }else{
-        setInit[i]=false
-      }
-    }
-    switch (rank) {
-      case 'MD':
-        setMD(setInit)
-        break;
-      case 'UD':
-        setUD(setInit)
-        break;
-      case 'GD':
-        setGD(setInit)
-        break;
-      default:
-        console.log('Err');
-    }
-    
-  }
-
-//   const handleChange = (e: Event) => {
-//     var id = e.target.id
-//     var currentMD=MD
-//     currentMD[`${id}`]=!MD[`${id}`]
-//     MD=currentMD
-//   }
-
-  var funcArray = [
-    "isQuit",
-    "isLogOut",
-    "isHostSetting",
-    "isLanguage",
-    "isResolution",
-    "isWorkingType",
-    "isSwitchType",
-    "isSetting",
-    "isVR",
-    "isAR",
-    "isMouse3D",
-    "isDevice",
-    "isConsoleView",
-    "isTreeView",
-    "isMonitorView",
-    "isAlertListView",
-    "isLBSView",
-    "isTimeBarView",
-    "isVideoView",
-    "isWebBrowserView",
-    "isReportView",
-    "isWindows",
-    "isEnable"
-  ]
-
-  var funcArraylv1=[
-    "MonitorMdoeMainMenuBar",
-    "EditorModeMainMenuBar",
-  ]
-
   var Body =() => {
-    let MMDCheckbox = []
-    let MUDCheckbox = []
-    let MGDCheckbox = []
-    let eCheckbox = []
+    let MDMonitorCheckbox = []
+    let UDMonitorCheckbox = []
+    let GDMonitorCheckbox = []
+    let MHMonitorCheckbox = []
+    let UHMonitorCheckbox = []
+    let GHMonitorCheckbox = []
+    let MWMonitorCheckbox = []
+    let UWMonitorCheckbox = []
+    let GWMonitorCheckbox = []
+    let MDEditorCheckbox = []
+    let UDEditorCheckbox = []
+    let GDEditorCheckbox = []
+    let MHEditorCheckbox = []
+    let UHEditorCheckbox = []
+    let GHEditorCheckbox = []
+
     let table=[]
-    const getSecondPart=(str)=> { 
+    const getSecondPart=(str :String)=> { 
       var strArray = str.split('-')
       return strArray[strArray.length - 2];
     }
-    const getThirdPart=(str)=> { 
+    const getThirdPart=(str: String)=> { 
         var strArray = str.split('-')
         return strArray[strArray.length - 1];
     }
     const handleClick = (e) => {
-      var id = getThirdPart(e.target.id)
-      var rank = getSecondPart(e.target.id)
-      switch (rank) {
-        case 'MD':
-          var currentMD = JSON.stringify(MD)
+      var id = parseInt(getThirdPart(e.target.id))
+      console.log("handleClick=>")
+      console.log(id)
+      var group = getSecondPart(e.target.id)
+      console.log(group)
+      switch (group) {
+        case 'MDMonitor':
+          var currentMDM = JSON.stringify(MDMonitor)
+          currentMDM = JSON.parse(currentMDM)
+          currentMDM[id] = !MDMonitor[id]
+          setMDMonitor(currentMDM)
+          break;
+        case 'UDMonitor':
+          var currentUDM = JSON.stringify(UDMonitor)
+          currentUDM = JSON.parse(currentUDM)
+          currentUDM[id] = !UDMonitor[id]
+          setUDMonitor(currentUDM)
+          break;
+        case 'GDMonitor':
+          var currentGDM = JSON.stringify(GDMonitor)
+          currentGDM = JSON.parse(currentGDM)
+          currentGDM[id] = !GDMonitor[id]
+          setGDMonitor(currentGDM)
+          break;
+        case 'MHMonitor':
+          var currentMHM = JSON.stringify(MHMonitor)
+          currentMHM = JSON.parse(currentMHM)
+          currentMHM[id] = !MHMonitor[id]
+          setMHMonitor(currentMHM)
+          break;
+        case 'UHMonitor':
+          var currentUHM = JSON.stringify(UHMonitor)
+          currentUHM = JSON.parse(currentUHM)
+          currentUHM[id] = !UHMonitor[id]
+          setUHMonitor(currentUHM)
+          break;
+        case 'GHMonitor':
+          var currentGHM = JSON.stringify(GHMonitor)
+          currentGHM = JSON.parse(currentGHM)
+          currentGHM[id] = !GHMonitor[id]
+          setGHMonitor(currentGHM)
+          break;
+        case 'MWMonitor':
+          var currentMWM = JSON.stringify(MWMonitor)
+          currentMWM = JSON.parse(currentMWM)
+          currentMWM[id] = !MWMonitor[id]
+          setMWMonitor(currentMWM)
+          break;
+        case 'UWMonitor':
+          var currentUWM = JSON.stringify(UWMonitor)
+          currentUWM = JSON.parse(currentUWM)
+          currentUWM[id] = !UWMonitor[id]
+          setUWMonitor(currentUWM)
+          break;
+        case 'GWMonitor':
+          var currentGWM = JSON.stringify(GWMonitor)
+          currentGWM = JSON.parse(currentGWM)
+          currentGWM[id] = !GWMonitor[id]
+          setGWMonitor(currentGWM)
+          break;
+        case 'MDEditor':
+          var currentMD = JSON.stringify(MDEditor)
           currentMD = JSON.parse(currentMD)
-          currentMD[id] = !MD[id]
-          setMD(currentMD)
+          currentMD[id] = !MDEditor[id]
+          setMDEditor(currentMD)
           break;
-        case 'UD':
-          var currentUD = JSON.stringify(UD)
+        case 'UDEditor':
+          var currentUD = JSON.stringify(UDEditor)
           currentUD = JSON.parse(currentUD)
-          currentUD[id] = !UD[id]
-          setUD(currentUD)
+          currentUD[id] = !UDEditor[id]
+          setUDEditor(currentUD)
           break;
-        case 'GD':
-          var currentGD = JSON.stringify(GD)
+        case 'GDEditor':
+          var currentGD = JSON.stringify(GDEditor)
           currentGD = JSON.parse(currentGD)
-          currentGD[id] = !GD[id]
-          setGD(currentGD)
+          currentGD[id] = !GDEditor[id]
+          setGDEditor(currentGD)
+          break;
+        case 'MHEditor':
+          var currentMHE = JSON.stringify(MHEditor)
+          currentMHE = JSON.parse(currentMHE)
+          currentMHE[id] = !MHEditor[id]
+          setMHEditor(currentMHE)
+          break;
+        case 'UHEditor':
+          var currentUHE = JSON.stringify(UHEditor)
+          currentUHE = JSON.parse(currentUHE)
+          currentUHE[id] = !UHEditor[id]
+          setUHEditor(currentUHE)
+          break;
+        case 'GHEditor':
+          var currentGHE = JSON.stringify(GHEditor)
+          currentGHE = JSON.parse(currentGHE)
+          currentGHE[id] = !GHEditor[id]
+          setUHEditor(currentGHE)
           break;
         default:
           console.log('Err');
       }
-      
     }
+
     for (let i = 0; i < 23; i++) {
-      MMDCheckbox.push(
+      MDMonitorCheckbox.push(
         <input 
-          id={"M-MD-"+i.toString()} 
+          id={"MDMonitor-"+i.toString()} 
           type="checkbox" 
-          checked={MD[i]} 
+          checked={MDMonitor[i]} 
           onClick={()=>{handleClick(event)}}
         />, 
-        funcArray[i], 
+        monitorArray[i], 
+        <br />
+      )
+
+      UDMonitorCheckbox.push(
+        <input 
+          id={"UDMonitor-"+i.toString()} 
+          type="checkbox" 
+          checked={UDMonitor[i]} 
+          onClick={()=>{handleClick(event)}}
+        />, 
+        monitorArray[i], 
+        <br />
+      )
+
+      GDMonitorCheckbox.push(
+        <input 
+          id={"GDMonitor-"+i.toString()} 
+          type="checkbox" 
+          checked={GDMonitor[i]} 
+          onClick={()=>{handleClick(event)}}
+        />, 
+        monitorArray[i], 
+        <br />
+      )
+
+      MHMonitorCheckbox.push(
+        <input 
+          id={"MHMonitor-"+i.toString()} 
+          type="checkbox" 
+          checked={MHMonitor[i]} 
+          onClick={()=>{handleClick(event)}}
+        />, 
+        monitorArray[i], 
+        <br />
+      )
+
+      UHMonitorCheckbox.push(
+        <input 
+          id={"UHMonitor-"+i.toString()} 
+          type="checkbox" 
+          checked={UHMonitor[i]} 
+          onClick={()=>{handleClick(event)}}
+        />, 
+        monitorArray[i], 
+        <br />
+      )
+
+      GHMonitorCheckbox.push(
+        <input 
+          id={"GHMonitor-"+i.toString()} 
+          type="checkbox" 
+          checked={GHMonitor[i]} 
+          onClick={()=>{handleClick(event)}}
+        />, 
+        monitorArray[i], 
+        <br />
+      )
+
+      MWMonitorCheckbox.push(
+        <input 
+          id={"MWMonitor-"+i.toString()} 
+          type="checkbox" 
+          checked={MWMonitor[i]} 
+          onClick={()=>{handleClick(event)}}
+        />, 
+        monitorArray[i], 
+        <br />
+      )
+
+      UWMonitorCheckbox.push(
+        <input 
+          id={"UWMonitor-"+i.toString()} 
+          type="checkbox" 
+          checked={UWMonitor[i]} 
+          onClick={()=>{handleClick(event)}}
+        />, 
+        monitorArray[i], 
+        <br />
+      )
+
+      GWMonitorCheckbox.push(
+        <input 
+          id={"GWMonitor-"+i.toString()} 
+          type="checkbox" 
+          checked={GWMonitor[i]} 
+          onClick={()=>{handleClick(event)}}
+        />, 
+        monitorArray[i], 
+        <br />
+      )
+    }
+    
+    for (let i = 0; i < 23; i++) {
+      UDEditorCheckbox.push(
+        <input 
+          id={"UDEditor-"+i.toString()} 
+          type="checkbox" 
+          checked={UDEditor[i]} 
+          onClick={()=>{handleClick(event)}}
+        />, 
+        monitorArray[i], 
         <br />
       )
     }
     for (let i = 0; i < 23; i++) {
-      MUDCheckbox.push(
+      GDEditorCheckbox.push(
         <input 
-          id={"M-UD-"+i.toString()} 
+          id={"GDEditor-"+i.toString()} 
           type="checkbox" 
-          checked={UD[i]} 
+          checked={GDEditor[i]} 
           onClick={()=>{handleClick(event)}}
         />, 
-        funcArray[i], 
+        monitorArray[i], 
+        <br />
+      )
+    }
+    
+    for (let i = 0; i < 23; i++) {
+      MHEditorCheckbox.push(
+        <input 
+          id={"MHEditor-"+i.toString()} 
+          type="checkbox" 
+          checked={MHEditor[i]} 
+          onClick={()=>{handleClick(event)}}
+        />, 
+        monitorArray[i], 
         <br />
       )
     }
     for (let i = 0; i < 23; i++) {
-      MGDCheckbox.push(
+      UHEditorCheckbox.push(
         <input 
-          id={"M-GD-"+i.toString()} 
+          id={"UHEditor-"+i.toString()} 
           type="checkbox" 
-          checked={GD[i]} 
+          checked={UHEditor[i]} 
           onClick={()=>{handleClick(event)}}
         />, 
-        funcArray[i], 
+        monitorArray[i], 
         <br />
       )
     }
     for (let i = 0; i < 23; i++) {
-      eCheckbox.push(
+      GHEditorCheckbox.push(
         <input 
-          id={"E-"+i.toString()} 
+          id={"GHEditor-"+i.toString()} 
           type="checkbox" 
-          checked={MD[i]} 
+          checked={GHEditor[i]} 
           onClick={()=>{handleClick(event)}}
         />, 
-        funcArray[i], 
+        monitorArray[i], 
         <br />
       )
     }
+
     table.push(
       <table>
         <tr>
+          <td colSpan={9} style={{textAlign:"center"}}>
+            MonitorModeMainMenuBar
+          </td>
+        </tr>
+        <tr>
           <td colSpan={3} style={{textAlign:"center"}}>
             Desktop
+          </td>
+          <td colSpan={3} style={{textAlign:"center"}}>
+            HandHeld
+          </td>
+          <td colSpan={3} style={{textAlign:"center"}}>
+            WebGL
           </td>
         </tr>
         <tr> 
           <td>Manager</td>
           <td>User</td>
           <td>Guest</td>
+          <td>Manager</td>
+          <td>User</td>
+          <td>Guest</td>
+          <td>Manager</td>
+          <td>User</td>
+          <td>Guest</td>
         </tr>
         <tr>
-          <td>{MMDCheckbox}</td>
-          <td>{MUDCheckbox}</td>
-          <td>{MGDCheckbox}</td>
+          <td>{MDMonitorCheckbox}</td>
+          <td>{UDMonitorCheckbox}</td>
+          <td>{GDMonitorCheckbox}</td>
+          <td>{MHMonitorCheckbox}</td>
+          <td>{UHMonitorCheckbox}</td>
+          <td>{GHMonitorCheckbox}</td>
+          <td>{MWMonitorCheckbox}</td>
+          <td>{UWMonitorCheckbox}</td>
+          <td>{GWMonitorCheckbox}</td>
+        </tr>
+        <br />
+        <tr>
+          <td colSpan={6} style={{textAlign:"center"}}>
+            EditorModeMainMenuBar
+          </td>
+        </tr>
+        <tr>
+          <td colSpan={3} style={{textAlign:"center"}}>
+            Desktop
+          </td>
+          <td colSpan={3} style={{textAlign:"center"}}>
+            HandHeld
+          </td>
+        </tr>
+        <tr> 
+          <td>Manager</td>
+          <td>User</td>
+          <td>Guest</td>
+          <td>Manager</td>
+          <td>User</td>
+          <td>Guest</td>
+        </tr>
+        <tr>
+          <td>{MDEditorCheckbox}</td>
+          <td>{UDEditorCheckbox}</td>
+          <td>{GDEditorCheckbox}</td>
+          <td>{MHEditorCheckbox}</td>
+          <td>{UHEditorCheckbox}</td>
+          <td>{GHEditorCheckbox}</td>
         </tr>
       </table>,
       <button onClick={()=>{handleSubmit()}}>Submmit</button>
